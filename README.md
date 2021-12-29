@@ -8,4 +8,5 @@ coming soon
 coming soon
 
 ## Version 0.0.1 Pre-Alpha
-
+-blocks ui and snapping done
+-cant do anything yet
