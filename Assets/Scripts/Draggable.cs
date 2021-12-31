@@ -16,6 +16,9 @@ public class Draggable : MonoBehaviour
 
     private int b, l, r, t;
 
+    private List<Transform> objs = new List<Transform>();
+    private Transform obj;
+
     private void OnMouseDown()
     {
         isDragged = true;
@@ -31,6 +34,19 @@ public class Draggable : MonoBehaviour
         gameObject.transform.Find("right").GetComponent<SortingGroup>().sortingOrder = 98;
         gameObject.transform.Find("base").Find("Canvas").GetComponent<Canvas>().sortingOrder = 100;
         startPos = gameObject.transform.position;
+        obj = transform;
+        bool stop = false;
+        for(int i = 0; stop == false ; i++)
+        {
+            objs.Add(obj);
+            if(obj.GetComponent<BlockManager>().childBlock)
+            { 
+                obj = obj.GetComponent<BlockManager>().childBlock;
+            } else
+            {
+                stop = true;
+            }
+        }
         gameObject.transform.GetComponent<BlockManager>().Remove(gameObject.transform);
     }
 
@@ -39,12 +55,17 @@ public class Draggable : MonoBehaviour
         if(isDragged)
         {
             transform.localPosition = spriteDragStartPosition + (Camera.main.ScreenToWorldPoint(Input.mousePosition) - mouseDragStartPosition);
+            for(int i = 0; i < objs.Count; i++)
+            {
+               objs[i].localPosition = transform.localPosition - new Vector3(0, i - objs[i].localScale.y*i, 0); //New Position
+            }
         }
     }
 
     private void OnMouseUp()
     {
         isDragged = false;
+        objs.Clear();
         dragEndedCallback(this);
         gameObject.transform.Find("base").GetComponent<SortingGroup>().sortingOrder = b;
         gameObject.transform.Find("left").GetComponent<SortingGroup>().sortingOrder = l;
