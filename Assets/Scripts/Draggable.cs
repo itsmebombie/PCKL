@@ -21,7 +21,27 @@ public class Draggable : MonoBehaviour
 
     private void OnMouseDown()
     {
-        isDragged = true;
+        startPos = gameObject.transform.position;
+        obj = transform;
+        bool stop = false;
+        for(int i = 0; stop == false; i++)
+        {
+            objs.Add(obj);
+            obj.GetComponent<Draggable>().isDragged = true;
+            if(obj == transform)
+            {
+                gameObject.transform.GetComponent<BlockManager>().RemovePar(gameObject.transform);
+            }
+            if(obj.GetComponent<BlockManager>().childBlock)
+            {
+                obj = obj.GetComponent<BlockManager>().childBlock;
+            }
+            else
+            {
+                gameObject.transform.GetComponent<BlockManager>().RemoveCh(gameObject.transform);
+                stop = true;
+            }
+        }
         mouseDragStartPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         spriteDragStartPosition = transform.localPosition;
         b = gameObject.transform.Find("base").GetComponent<SortingGroup>().sortingOrder;
@@ -33,21 +53,6 @@ public class Draggable : MonoBehaviour
         gameObject.transform.Find("left").GetComponent<SortingGroup>().sortingOrder = 98;
         gameObject.transform.Find("right").GetComponent<SortingGroup>().sortingOrder = 98;
         gameObject.transform.Find("base").Find("Canvas").GetComponent<Canvas>().sortingOrder = 100;
-        startPos = gameObject.transform.position;
-        obj = transform;
-        bool stop = false;
-        for(int i = 0; stop == false ; i++)
-        {
-            objs.Add(obj);
-            if(obj.GetComponent<BlockManager>().childBlock)
-            { 
-                obj = obj.GetComponent<BlockManager>().childBlock;
-            } else
-            {
-                stop = true;
-            }
-        }
-        gameObject.transform.GetComponent<BlockManager>().Remove(gameObject.transform);
     }
 
     private void OnMouseDrag()
@@ -57,14 +62,17 @@ public class Draggable : MonoBehaviour
             transform.localPosition = spriteDragStartPosition + (Camera.main.ScreenToWorldPoint(Input.mousePosition) - mouseDragStartPosition);
             for(int i = 0; i < objs.Count; i++)
             {
-               objs[i].localPosition = transform.localPosition - new Vector3(0, i - objs[i].localScale.y*i, 0); //New Position
+               objs[i].localPosition = transform.localPosition - new Vector3(0, i - objs[i].localScale.y*i, 0); 
             }
         }
     }
 
     private void OnMouseUp()
     {
-        isDragged = false;
+        for(int i = 0; i < objs.Count; i++)
+        {
+            obj.GetComponent<Draggable>().isDragged = false;
+        }
         objs.Clear();
         dragEndedCallback(this);
         gameObject.transform.Find("base").GetComponent<SortingGroup>().sortingOrder = b;
@@ -79,6 +87,17 @@ public class Draggable : MonoBehaviour
         print("cancelled");
         gameObject.transform.position = startPos;
         gameObject.transform.GetComponent<BlockManager>().Remove(gameObject.transform);
+    }
+
+    void OnCollisionStay2D(Collision2D coll)
+    {
+        if(coll.transform.tag == "Delete")
+        {
+            if (!isDragged)
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 
 }
