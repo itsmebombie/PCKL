@@ -30,14 +30,18 @@ public class Snap : MonoBehaviour
         {
             if (snapPoint != draggable.transform.Find("btm") && snapPoint != draggable.transform.Find("top"))
             {
-                float currentDistance = Vector2.Distance(draggable.transform.position, snapPoint.position);
-                if (closestSnapPoint == null || currentDistance < closestDistance)
+                if (draggable.transform && snapPoint)
                 {
+                    float currentDistance = Vector2.Distance(draggable.transform.position, snapPoint.position);
+                    if (closestSnapPoint == null || currentDistance < closestDistance)
+                    {
 
-                    closestSnapPoint = snapPoint;
-                    closestDistance = currentDistance;
+                        closestSnapPoint = snapPoint;
+                        closestDistance = currentDistance;
 
+                    }
                 }
+                
             }
         }
 
@@ -53,7 +57,7 @@ public class Snap : MonoBehaviour
                 {
                     draggable.transform.GetComponent<BlockManager>().parentBlock = closestSnapPoint.parent;
                     closestSnapPoint.parent.GetComponent<BlockManager>().childBlock = draggable.transform;
-                    //print(closestSnapPoint + " <- " + closestSnapPoint.parent);
+                    print(closestSnapPoint + " <- " + closestSnapPoint.parent);
                 }
 
             }
@@ -68,7 +72,7 @@ public class Snap : MonoBehaviour
                 {
                     draggable.transform.GetComponent<BlockManager>().childBlock = closestSnapPoint.parent;
                     closestSnapPoint.parent.GetComponent<BlockManager>().parentBlock = draggable.transform;
-                    //print(closestSnapPoint + " <- " + closestSnapPoint.parent);
+                    print(closestSnapPoint + " <- " + closestSnapPoint.parent);
                 }
 
             }
