@@ -1,5 +1,5 @@
 # PCKL
-PCKL is a program that intends writing code for SPWN easier.
+PCKL is a program that intends to make writing code for SPWN easier.
 
 # Help
 coming soon
